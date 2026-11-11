@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="God's Eye — a global situational awareness platform tracking seismic activity, orbital movement and world events." />
+  <meta name="theme-color" content="#080d13" />
+  <title>God's Eye | Global Intelligence</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand">GOD'S EYE <span>GLOBAL INTELLIGENCE</span></div>
+    <div class="status" id="status">connecting…</div>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Live platform statistics"></section>
+
+  <main class="layout">
+    <section class="mapwrap">
+      <svg id="map" viewBox="0 0 960 500" role="img" aria-label="World map with live earthquakes and the ISS"></svg>
+      <div class="legend">
+        <span><i class="dot quake"></i> Earthquake (size = magnitude)</span>
+        <span><i class="dot flag"></i> Flagged cluster</span>
+        <span><i class="dot iss"></i> ISS</span>
+      </div>
+      <div class="tip" id="tip" hidden></div>
+    </section>
+
+    <aside class="panel">
+      <nav class="tabs" role="tablist">
+        <button role="tab" data-tab="wire" aria-selected="true">Wire</button>
+        <button role="tab" data-tab="quakes" aria-selected="false">Quakes</button>
+        <button role="tab" data-tab="signals" aria-selected="false">Signals</button>
+        <button role="tab" data-tab="history" aria-selected="false">History</button>
+        <button role="tab" data-tab="brief" aria-selected="false">AI Brief</button>
+      </nav>
+      <div class="pane" id="pane-wire"></div>
+      <div class="pane" id="pane-quakes" hidden></div>
+      <div class="pane" id="pane-signals" hidden></div>
+      <div class="pane" id="pane-history" hidden></div>
+      <div class="pane" id="pane-brief" hidden>
+        <p class="muted">Summarises the current headlines and quakes with Claude. Needs the /api/brief function deployed with an ANTHROPIC_API_KEY.</p>
+        <button id="briefBtn" class="btn">Generate briefing</button>
+        <div id="briefOut" class="brief"></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="about">
+    <div>
+      <div class="eyebrow">THE CREATOR</div>
+      <h2>George Olutolase</h2>
+      <p>Creator of God's Eye. A Computer Science student at Bowen University and aspiring AI engineer interested in Python, machine learning, data analysis and building technology that makes complex information easier to understand.</p>
+    </div>
+    <div class="about-mark">G<span>E</span></div>
+  </footer>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
