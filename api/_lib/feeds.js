@@ -4,11 +4,15 @@ const GDELT = "https://api.gdeltproject.org/api/v2/doc/doc?query=" +
   encodeURIComponent("(conflict OR earthquake OR outbreak OR protest OR attack) sourcelang:english") +
   "&mode=artlist&maxrecords=25&format=json&timespan=24h&sort=hybridrel";
 
+const googleNews = (query) => "https://news.google.com/rss/search?q=" +
+  encodeURIComponent(query) + "&hl=en-US&gl=US&ceid=US:en";
 const RSS_FEEDS = [
-  { source: "CBN News", url: "https://www.cbn.com/cbnnews/feed/" },
+  { source: "CBN News", url: googleNews("site:cbn.com/cbnnews OR site:cbn.com/news") },
   { source: "BBC News", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
   { source: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
-  { source: "The Guardian", url: "https://www.theguardian.com/world/rss" }
+  { source: "The Guardian", url: "https://www.theguardian.com/world/rss" },
+  { source: "Reuters", url: googleNews("site:reuters.com world news") },
+  { source: "Associated Press", url: googleNews("site:apnews.com world news") }
 ];
 
 function stripTags(value = "") {
