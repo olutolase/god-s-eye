@@ -70,6 +70,7 @@ function initGlobe() {
     .polygonAltitude(0.006)
     .pointsData([])
     .htmlElementsData([])
+    .arcsData([]).arcStartLat("startLat").arcStartLng("startLng").arcEndLat("endLat").arcEndLng("endLng").arcColor(() => ["#8fc6ff88","#8fc6ff00"]).arcStroke(0.35).arcAltitude(0.018)
     .htmlLat("lat").htmlLng("lng")
     .htmlElement((d) => { const el = document.createElement("button"); el.className = "plane-marker"; el.type = "button"; el.textContent = "✈"; el.title = d.label; el.addEventListener("click", (e) => { e.stopPropagation(); selectPlane(d.item); }); return el; })
     .pointLat("lat")
@@ -106,7 +107,9 @@ function pointData() {
   const firePoints = state.fires.slice(0, 1200).filter(f => Number.isFinite(f.lat) && Number.isFinite(f.lon)).map(f => ({lat:f.lat,lng:f.lon,color:"#ff7043",radius:.13,altitude:.006,label:"NASA FIRMS fire detection",kind:"fire",item:f}));
   const stormPoints = state.storms.filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lon)).map(s => ({lat:s.lat,lng:s.lon,color:"#8b9dff",radius:.42,altitude:.012,label:s.title,kind:"storm",item:s}));
   state.globe.pointsData([...newsPoints, ...quakePoints, ...firePoints, ...stormPoints]);
-  state.globe.htmlElementsData(state.planes.filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon)).slice(0,700).map(p => ({lat:p.lat,lng:p.lon,label:p.callsign || p.icao24 || "Aircraft",item:p})));
+  const aircraft=state.planes.filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon)).slice(0,700);
+  state.globe.htmlElementsData(aircraft.map(p => ({lat:p.lat,lng:p.lon,label:p.callsign || p.icao24 || "Aircraft",item:p})));
+  state.globe.arcsData(aircraft.filter(p=>Number.isFinite(p.heading)&&Number.isFinite(p.velocity)).map(p=>{const distance=p.velocity*120/1000,rad=p.heading*Math.PI/180,latDelta=distance*Math.cos(rad)/111,lngDelta=distance*Math.sin(rad)/(111*Math.max(.2,Math.cos(p.lat*Math.PI/180)));return {startLat:p.lat,startLng:p.lon,endLat:p.lat+latDelta,endLng:p.lon+lngDelta};}));
   renderStats();
 }
 
