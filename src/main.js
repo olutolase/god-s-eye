@@ -3,12 +3,12 @@ import { feature } from "topojson-client";
 import world from "world-atlas/countries-110m.json";
 
 const $ = (id) => document.getElementById(id);
-const state = { quakes: [], flagged: [], news: [], iss: null, globe: null, selectedSource: "all", activeTab: "wire" };
+const state = { quakes: [], flagged: [], news: [], iss: null, planes: [], fires: [], storms: [], markets: [], globe: null, selectedSource: "all", activeTab: "wire" };
 const countries = feature(world, world.objects.countries).features;
 const countryNames = new Map(countries.map((f) => [String(f.properties.name || "").toLowerCase(), f]));
 
 const locations = [
-  ["nigeria",9.08,8.67],["lagos",6.52,3.38],["abuja",9.06,7.49],["ghana",7.95,-1.02],["accra",5.56,-0.2],
+  ["nigeria",9.08,8.67],["lagos",6.52,3.38],["abuja",9.06,7.49],["ghana",7.95,-1.02],["accra",5.56,-0.2],["senegal",14.5,-14.45],["dakar",14.69,-17.45],["mali",17.57,-4],["bamako",12.64,-8],["burkina faso",12.24,-1.56],["ouagadougou",12.37,-1.52],["niger",17.61,8.08],["niamey",13.51,2.11],["chad",15.45,18.73],["ndjamena",12.13,15.05],["cameroon",7.37,12.35],["yaounde",3.87,11.52],["douala",4.05,9.77],["central african republic",6.61,20.94],["bangui",4.36,18.56],["south sudan",6.88,31.31],["juba",4.85,31.58],["uganda",1.37,32.29],["kampala",0.35,32.58],["rwanda",-1.94,29.87],["kigali",-1.94,30.06],["burundi",-3.37,29.92],["tanzania",-6.37,34.89],["dar es salaam",-6.79,39.21],["mozambique",-18.67,35.53],["maputo",-25.97,32.58],["zimbabwe",-19.02,29.15],["harare",-17.83,31.05],["zambia",-13.13,27.85],["lusaka",-15.39,28.32],["malawi",-13.25,34.3],["lilongwe",-13.96,33.79],["angola",-11.2,17.87],["luanda",-8.84,13.23],["namibia",-22.96,18.49],["windhoek",-22.56,17.08],["botswana",-22.33,24.68],["gaborone",-24.65,25.91],["lesotho",-29.61,28.23],["eswatini",-26.52,31.47],["madagascar",-18.77,46.87],["antananarivo",-18.88,47.51],["mauritania",21,-10.94],["nouakchott",18.08,-15.98],["guinea",9.95,-9.7],["conakry",9.64,-13.58],["sierra leone",8.46,-11.78],["freetown",8.48,-13.23],["liberia",6.43,-9.43],["monrovia",6.3,-10.8],["ivory coast",7.54,-5.55],["cote d’ivoire",7.54,-5.55],["abidjan",5.36,-4.01],["togo",8.62,0.82],["lome",6.13,1.22],["benin",9.31,2.32],["porto-novo",6.5,2.6],["gambia",13.44,-15.31],["banjul",13.45,-16.58],["equatorial guinea",1.65,10.27],["gabon",-0.8,11.61],["libreville",0.39,9.45],["republic of the congo",-0.23,15.83],["kinshasa",-4.32,15.31],["democratic republic of the congo",-2.88,23.66],["drc",-2.88,23.66],["burundi",-3.37,29.92],["eritrea",15.18,39.78],["asmara",15.32,38.93],["djibouti",11.83,42.59],["djibouti city",11.59,43.15],["zanzibar",-6.16,39.19],
   ["kenya",0.02,37.91],["nairobi",-1.29,36.82],["south africa",-30.56,22.94],["johannesburg",-26.2,28.04],
   ["sudan",12.86,30.22],["ethiopia",9.15,40.49],["somalia",5.15,46.2],["congo",-0.23,15.83],
   ["israel",31.05,34.85],["gaza",31.5,34.47],["palestine",31.95,35.23],["jerusalem",31.77,35.21],
@@ -69,6 +69,9 @@ function initGlobe() {
     .polygonStrokeColor(() => "#294155")
     .polygonAltitude(0.006)
     .pointsData([])
+    .htmlElementsData([])
+    .htmlLat("lat").htmlLng("lng")
+    .htmlElement((d) => { const el = document.createElement("button"); el.className = "plane-marker"; el.type = "button"; el.textContent = "✈"; el.title = d.label; el.addEventListener("click", (e) => { e.stopPropagation(); selectPlane(d.item); }); return el; })
     .pointLat("lat")
     .pointLng("lng")
     .pointColor("color")
@@ -76,11 +79,7 @@ function initGlobe() {
     .pointAltitude("altitude")
     .pointResolution(12)
     .pointLabel((d) => d.label)
-    .onPointClick((d) => {
-      if (d.kind === "news") selectNews(d.item);
-      else if (d.kind === "quake") selectQuake(d.item);
-      else if (d.kind === "iss") selectIss();
-    });
+    .onPointClick((d) => { if (d.kind === "news") selectNews(d.item); else if (d.kind === "quake") selectQuake(d.item); else if (d.kind === "fire") selectFire(d.item); else if (d.kind === "storm") selectStorm(d.item); });
   const controls = globe.controls();
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.28;
@@ -104,11 +103,10 @@ function pointData() {
     radius: Math.max(0.18, Math.min(0.75, Number(q.mag || 2) * 0.1)), altitude: 0.009,
     label: "M" + Number(q.mag).toFixed(1) + " · " + q.place, kind: "quake", item: q
   }));
-  const issPoint = state.iss ? [{
-    lat: state.iss.lat, lng: state.iss.lon, color: "#76aaff", radius: 0.65, altitude: 0.025,
-    label: "International Space Station", kind: "iss", item: state.iss
-  }] : [];
-  state.globe.pointsData([...newsPoints, ...quakePoints, ...issPoint]);
+  const firePoints = state.fires.slice(0, 1200).filter(f => Number.isFinite(f.lat) && Number.isFinite(f.lon)).map(f => ({lat:f.lat,lng:f.lon,color:"#ff7043",radius:.13,altitude:.006,label:"NASA FIRMS fire detection",kind:"fire",item:f}));
+  const stormPoints = state.storms.filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lon)).map(s => ({lat:s.lat,lng:s.lon,color:"#8b9dff",radius:.42,altitude:.012,label:s.title,kind:"storm",item:s}));
+  state.globe.pointsData([...newsPoints, ...quakePoints, ...firePoints, ...stormPoints]);
+  state.globe.htmlElementsData(state.planes.filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon)).slice(0,700).map(p => ({lat:p.lat,lng:p.lon,label:p.callsign || p.icao24 || "Aircraft",item:p})));
   renderStats();
 }
 
@@ -127,18 +125,15 @@ function selectQuake(q) {
     safeLink(q.url, "OPEN USGS EVENT ↗"));
   state.globe.pointOfView({ lat: q.lat, lng: q.lon, altitude: 1.35 }, 900);
 }
-function selectIss() {
-  $("selectedEvent").replaceChildren(node("span", "eyebrow", "ORBITAL TRACKING"),
-    node("h3", "", "International Space Station"),
-    node("p", "selected-meta", "Altitude " + (state.iss.alt || "—").toFixed(1) + " km · Velocity " + (state.iss.vel || "—").toFixed(0) + " km/h"));
-  state.globe.pointOfView({ lat: state.iss.lat, lng: state.iss.lon, altitude: 1.5 }, 900);
-}
+function selectPlane(p) { $("selectedEvent").replaceChildren(node("span","eyebrow","LIVE AIRCRAFT · OPENSKY"),node("h3","",p.callsign || p.icao24 || "Aircraft"),node("p","selected-meta",`${p.origin || "Origin unavailable"} → ${p.destination || "Destination unavailable"} · ${Math.round(p.alt || 0)} m · ${Math.round(p.velocity || 0)} m/s · heading ${Math.round(p.heading || 0)}°`),node("p","selected-meta","Live ADS-B position; displayed track direction is an estimated projection, not a recorded route.")); state.globe.pointOfView({lat:p.lat,lng:p.lon,altitude:1.2},800); }
+function selectFire(f) { $("selectedEvent").replaceChildren(node("span","eyebrow","NASA FIRMS · ACTIVE FIRE"),node("h3","","Satellite fire detection"),node("p","selected-meta",`Lat ${f.lat.toFixed(2)} · Lon ${f.lon.toFixed(2)} · ${f.brightness || "Brightness unavailable"} · ${f.acq_date || ""} ${f.acq_time || ""}`)); }
+function selectStorm(s) { $("selectedEvent").replaceChildren(node("span","eyebrow","WEATHER ALERT"),node("h3","",s.title),node("p","selected-meta",s.description || s.area || "Official weather alert"),safeLink(s.url,"OPEN OFFICIAL ALERT ↗")); }
 function renderStats() {
   $("stats").replaceChildren(
     stat(state.quakes.length, "EARTHQUAKES"),
     stat(state.news.length, "HEADLINES"),
     stat(state.news.filter((n) => n.location).length, "GEOLOCATED"),
-    stat(state.iss ? "LIVE" : "—", "ISS TRACKING")
+    stat(state.planes.length.toLocaleString(), "LIVE AIRCRAFT")
   );
 }
 function stat(value, label) {
@@ -237,6 +232,9 @@ async function refresh() {
       .sort((a,b) => new Date(b.published || 0) - new Date(a.published || 0));
     state.iss = d.iss || null;
     state.flagged = d.flagged || [];
+    const extra = await fetch("/api/intel", {cache:"no-store"}).then(r => r.ok ? r.json() : {}).catch(() => ({}));
+    state.planes = extra.planes || []; state.fires = extra.fires || []; state.storms = extra.storms || []; state.markets = extra.markets || [];
+    renderMarkets();
     pointData();
     renderWire();
     renderQuakes();
@@ -250,6 +248,7 @@ async function refresh() {
     $("lastUpdate").textContent = "FEED UPDATE FAILED";
   }
 }
+function renderMarkets() { const el=$("marketsTicker"); if(!el)return; el.replaceChildren(); for(const m of state.markets){const item=node("span","market-item",`${m.symbol} ${m.price} ${m.change || ""}`); el.append(item);} if(!state.markets.length) el.textContent="MARKET DATA TEMPORARILY UNAVAILABLE"; }
 function updateClock() {
   $("clock").textContent = new Date().toISOString().slice(11,19) + " UTC";
 }
