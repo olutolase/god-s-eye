@@ -109,3 +109,5 @@ h2{font-size:16px;margin:4px 0 0;letter-spacing:-.03em}
 .chokepoints span{font:8px var(--mono);color:var(--orange)}
 .shipping-panel>.muted{padding:0 12px 12px;margin:0}
 @media(max-width:800px){.brand strong{font-size:17px}.brand-mark{width:38px;height:38px}.ask-panel,.shipping-panel{margin:0 10px 10px}.chokepoints{grid-template-columns:1fr}.markets-ticker{align-items:flex-start;flex-direction:column;gap:7px}}
+
+.news-summary{font-size:11px;line-height:1.65;color:#b6c6d4;margin:9px 0 4px}
