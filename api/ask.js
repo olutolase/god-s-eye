@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
+const localAskUsage = new Map();
 async function checkLimit(ip){
  const url=process.env.SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
- if(!url||!key)return null;
+ if(!url||!key){const now=Date.now(),recent=(localAskUsage.get(ip)||[]).filter(t=>now-t<3600000);if(recent.length>=10)return false;recent.push(now);localAskUsage.set(ip,recent);return true;}
  const headers={apikey:key,authorization:"Bearer "+key,"content-type":"application/json"};
  const hash=createHash("sha256").update((process.env.RATE_LIMIT_SALT||key)+":"+ip).digest("hex");
  const since=new Date(Date.now()-3600000).toISOString();
