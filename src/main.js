@@ -118,7 +118,7 @@ function selectNews(n) {
   const panel = $("selectedEvent");
   panel.replaceChildren(node("span", "eyebrow", (n.source || "NEWS").toUpperCase() + " · " + (n.location ? n.location.name.toUpperCase() : "GLOBAL")),
     node("h3", "", n.title), node("p", "selected-meta", ago(n.published) + " · " + (n.location ? "Approximate headline location" : "No reliable location detected")),
-    safeLink(n.url, "OPEN ORIGINAL REPORT ↗"));
+    ...(n.summary ? [node("p", "news-summary", n.summary)] : []), safeLink(n.url, "OPEN ORIGINAL REPORT ↗"));
   if (n.location) state.globe.pointOfView({ lat: n.location.lat, lng: n.location.lng, altitude: 1.4 }, 900);
 }
 function selectQuake(q) {
