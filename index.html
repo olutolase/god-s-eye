@@ -33,13 +33,14 @@
         <div><span class="eyebrow">LIVE PLANETARY VIEW</span><h1>World monitor</h1></div>
         <div class="map-tools"><span class="map-hint">DRAG TO ROTATE · SCROLL TO ZOOM</span><button id="resetView" class="icon-btn" type="button" title="Reset globe view">↺</button></div>
       </div>
-      <div id="globeViz" role="img" aria-label="Interactive 3D globe showing live news locations, earthquakes and the International Space Station"></div>
+      <div id="globeViz" role="img" aria-label="Interactive 3D globe showing live news locations, earthquakes, aircraft, fires and storms"></div>
       <div class="map-legend">
         <span><i class="legend-dot news-dot"></i> NEWS</span>
         <span><i class="legend-dot quake-dot"></i> EARTHQUAKE</span>
-        <span><i class="legend-dot iss-dot"></i> ISS</span>
+        <span><i class="legend-dot plane-dot"></i> LIVE FLIGHTS</span><span><i class="legend-dot fire-dot"></i> FIRES</span><span><i class="legend-dot storm-dot"></i> STORMS</span>
         <span class="legend-note">Locations are approximate when inferred from headline text</span>
       </div>
+      <div class="markets-ticker"><span class="eyebrow">MARKETS</span><div id="marketsTicker">Loading market data…</div></div>
       <div class="selected-event" id="selectedEvent"><span class="eyebrow">SELECT AN EVENT</span><p>Choose a marker on the globe or a headline to inspect its source and location.</p></div>
     </section>
 
@@ -65,7 +66,8 @@
       <div class="pane" id="pane-signals" hidden></div>
       <div class="pane" id="pane-history" hidden></div>
       <div class="panel-foot"><span>PUBLIC SOURCES · AUTOMATIC REFRESH</span><span id="lastUpdate">WAITING FOR DATA</span></div>
-    </aside>
+    <section class="ask-panel"><div class="panel-head"><div><span class="eyebrow">LIVE DATA INTERROGATION</span><h2>Ask God’s Eye</h2></div></div><p class="muted ask-intro">Ask about current events using the live observations available on this globe.</p><form id="askForm"><input id="askInput" maxlength="800" placeholder="What’s happening near Japan today?" autocomplete="off" /><button type="submit" id="askButton">ASK ↗</button></form><div id="askAnswer" class="ask-answer" aria-live="polite">Claude will answer from the live feeds available to this session.</div></section>
+      <section class="shipping-panel"><div class="panel-head"><div><span class="eyebrow">MARITIME MONITOR</span><h2>Shipping chokepoints</h2></div></div><div class="chokepoints"><article><b>SUEZ CANAL</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF HORMUZ</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF MALACCA</b><span>AIS DATA NOT CONNECTED</span></article></div><p class="muted">Vessel counts and traffic-drop alerts require a licensed or provisioned AIS data feed. No vessel counts are fabricated.</p></section></aside>
   </main>
 
   <footer class="site-footer"><span>Created by George Tolase</span><span>GOD'S EYE <i>·</i> GLOBAL INTELLIGENCE</span></footer>
