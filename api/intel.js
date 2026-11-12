@@ -17,7 +17,7 @@ export default async function handler(req,res) {
       const q=d.chart?.result?.[0]; const meta=q?.meta; const price=meta?.regularMarketPrice; const prev=meta?.chartPreviousClose || meta?.previousClose;
       return {symbol,price:Number(price||0).toFixed(2),change:prev?((price-prev)/prev*100).toFixed(2)+"%":""};
     })),
-    process.env.NASA_FIRMS_MAP_KEY ? fetch("https://firms.modaps.eosdis.nasa.gov/api/area/csv/"+process.env.NASA_FIRMS_MAP_KEY+"/VIIRS_SNPP_NRT/world/1").then(r=>{if(!r.ok)throw new Error("FIRMS "+r.status);return r.text();}) : Promise.resolve("")
+    process.env.NASA_FIRMS_MAP_KEY ? fetch("https://firms.modaps.eosdis.nasa.gov/api/area/csv/"+process.env.NASA_FIRMS_MAP_KEY+"/VIIRS_SNPP_NRT/-180,-90,180,90/1").then(r=>{if(!r.ok)throw new Error("FIRMS "+r.status);return r.text();}) : Promise.resolve("")
   ]);
   let planes=[];
   if(air.status==="fulfilled") planes=(air.value.states||[]).filter(s=>s[5]!=null&&s[6]!=null&&s[8]===false).slice(0,1200).map(s=>({icao24:s[0],callsign:String(s[1]||"").trim(),origin:s[2],lat:s[6],lon:s[5],alt:s[7],velocity:s[9],heading:s[10],onGround:s[8]}));
