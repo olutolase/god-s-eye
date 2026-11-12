@@ -12,11 +12,11 @@ export default async function handler(req,res) {
   const [air, weather, markets, fires] = await Promise.allSettled([
     json("https://opensky-network.org/api/states/all"),
     json("https://api.weather.gov/alerts/active?status=actual&message_type=alert,update&limit=100",{headers:{"User-Agent":"GodsEye/1.0 contact: public-dashboard"}}),
-    Promise.all(["SPY","QQQ","^GSPC","^IXIC","GC=F","CL=F"].map(async symbol => {
+    Promise.allSettled(["SPY","QQQ","^GSPC","^IXIC","GC=F","CL=F"].map(async symbol => {
       const d=await json("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(symbol)+"?range=1d&interval=5m");
       const q=d.chart?.result?.[0]; const meta=q?.meta; const price=meta?.regularMarketPrice; const prev=meta?.chartPreviousClose || meta?.previousClose;
       return {symbol,price:Number(price||0).toFixed(2),change:prev?((price-prev)/prev*100).toFixed(2)+"%":""};
-    })),
+    })).then(results=>results.filter(x=>x.status==="fulfilled").map(x=>x.value)),
     process.env.NASA_FIRMS_MAP_KEY ? fetch("https://firms.modaps.eosdis.nasa.gov/api/area/csv/"+process.env.NASA_FIRMS_MAP_KEY+"/VIIRS_SNPP_NRT/-180,-90,180,90/1").then(r=>{if(!r.ok)throw new Error("FIRMS "+r.status);return r.text();}) : Promise.resolve("")
   ]);
   let planes=[];
