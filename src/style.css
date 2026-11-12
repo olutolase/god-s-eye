@@ -87,3 +87,25 @@ h2{font-size:16px;margin:4px 0 0;letter-spacing:-.03em}
 }
 @media(max-width:390px){.brand strong{font-size:11px}.brand small{font-size:8px}.top-meta{max-width:180px}.utc{display:none}#globeViz{height:330px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+/* God’s Eye intelligence expansion */
+.brand strong{font-size:20px;letter-spacing:.19em}
+.brand-mark{width:42px;height:42px;font-size:29px}
+.plane-marker{border:0;background:transparent;color:#8fc6ff;font-size:17px;line-height:1;cursor:pointer;text-shadow:0 0 8px #5baaff,0 0 16px #5baaff;transform:translate(-50%,-50%);padding:2px}
+.plane-marker:hover{color:#fff;transform:translate(-50%,-50%) scale(1.35)}
+.plane-dot{background:#8fc6ff}.fire-dot{background:#ff7043}.storm-dot{background:#8b9dff}
+.markets-ticker{display:flex;align-items:center;gap:14px;overflow:hidden;padding:11px 16px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#0a131c}
+#marketsTicker{display:flex;gap:18px;overflow:auto;white-space:nowrap;font:10px var(--mono);color:var(--teal)}
+.market-item{display:inline-block}
+.ask-panel,.shipping-panel{margin:0 16px 16px;border:1px solid #203445;border-radius:7px;background:#0a131c;overflow:hidden}
+.ask-intro{padding:0 14px;margin:12px 0}
+#askForm{display:flex;gap:8px;padding:0 14px 12px}
+#askInput{min-width:0;flex:1;border:1px solid #294052;border-radius:5px;background:#101c28;color:var(--text);padding:11px;font:11px var(--sans)}
+#askForm button{border:1px solid #28615b;border-radius:5px;background:#12312f;color:var(--teal);padding:0 13px;font:10px var(--mono);cursor:pointer}
+#askForm button:disabled{opacity:.55;cursor:wait}
+.ask-answer{border-top:1px solid var(--line);padding:13px 14px;color:#cbd8e4;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere;min-height:55px}
+.chokepoints{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:12px}
+.chokepoints article{border:1px solid var(--line);border-radius:5px;padding:9px;display:flex;flex-direction:column;gap:7px}
+.chokepoints b{font:9px var(--mono);color:#dce6ef}
+.chokepoints span{font:8px var(--mono);color:var(--orange)}
+.shipping-panel>.muted{padding:0 12px 12px;margin:0}
+@media(max-width:800px){.brand strong{font-size:17px}.brand-mark{width:38px;height:38px}.ask-panel,.shipping-panel{margin:0 10px 10px}.chokepoints{grid-template-columns:1fr}.markets-ticker{align-items:flex-start;flex-direction:column;gap:7px}}
