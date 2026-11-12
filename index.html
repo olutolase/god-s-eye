@@ -2,60 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="God's Eye — a global situational awareness platform tracking seismic activity, orbital movement and world events." />
-  <meta name="theme-color" content="#080d13" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="God's Eye — a live global intelligence dashboard for world news, seismic activity and orbital movement." />
+  <meta name="theme-color" content="#070c12" />
   <title>God's Eye | Global Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
-  <header class="top">
-    <div class="brand">GOD'S EYE <span>GLOBAL INTELLIGENCE</span></div>
-    <div class="status" id="status">connecting…</div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="God's Eye home">
+      <span class="brand-mark">◎</span>
+      <span><strong>GOD'S EYE</strong><small>GLOBAL INTELLIGENCE</small></span>
+    </a>
+    <div class="top-meta"><span class="live-dot"></span><span id="status">CONNECTING TO LIVE FEEDS</span><span class="utc" id="clock">--:--:-- UTC</span></div>
   </header>
 
-  <section class="stats" id="stats" aria-label="Live platform statistics"></section>
+  <section class="stats" id="stats" aria-label="Live platform statistics">
+    <div class="stat"><strong>—</strong><span>EARTHQUAKES</span></div>
+    <div class="stat"><strong>—</strong><span>HEADLINES</span></div>
+    <div class="stat"><strong>—</strong><span>GEOLOCATED</span></div>
+    <div class="stat"><strong>—</strong><span>ISS TRACKING</span></div>
+  </section>
 
-  <main class="layout">
-    <section class="mapwrap">
-      <svg id="map" viewBox="0 0 960 500" role="img" aria-label="World map with live earthquakes and the ISS"></svg>
-      <div class="legend">
-        <span><i class="dot quake"></i> Earthquake (size = magnitude)</span>
-        <span><i class="dot flag"></i> Flagged cluster</span>
-        <span><i class="dot iss"></i> ISS</span>
+  <main class="workspace">
+    <section class="globe-card">
+      <div class="section-head">
+        <div><span class="eyebrow">LIVE PLANETARY VIEW</span><h1>World monitor</h1></div>
+        <div class="map-tools"><span class="map-hint">DRAG TO ROTATE · SCROLL TO ZOOM</span><button id="resetView" class="icon-btn" type="button" title="Reset globe view">↺</button></div>
       </div>
-      <div class="tip" id="tip" hidden></div>
+      <div id="globeViz" role="img" aria-label="Interactive 3D globe showing live news locations, earthquakes and the International Space Station"></div>
+      <div class="map-legend">
+        <span><i class="legend-dot news-dot"></i> NEWS</span>
+        <span><i class="legend-dot quake-dot"></i> EARTHQUAKE</span>
+        <span><i class="legend-dot iss-dot"></i> ISS</span>
+        <span class="legend-note">Locations are approximate when inferred from headline text</span>
+      </div>
+      <div class="selected-event" id="selectedEvent"><span class="eyebrow">SELECT AN EVENT</span><p>Choose a marker on the globe or a headline to inspect its source and location.</p></div>
     </section>
 
-    <aside class="panel">
-      <nav class="tabs" role="tablist">
-        <button role="tab" data-tab="wire" aria-selected="true">Wire</button>
-        <button role="tab" data-tab="quakes" aria-selected="false">Quakes</button>
-        <button role="tab" data-tab="signals" aria-selected="false">Signals</button>
-        <button role="tab" data-tab="history" aria-selected="false">History</button>
-        <button role="tab" data-tab="brief" aria-selected="false">AI Brief</button>
-      </nav>
-      <div class="pane" id="pane-wire"></div>
+    <aside class="intel-panel">
+      <div class="panel-head"><div><span class="eyebrow">INTELLIGENCE FEED</span><h2>Latest headlines</h2></div><span class="feed-count" id="feedCount">0 ITEMS</span></div>
+      <div class="source-filters" id="sourceFilters">
+        <button class="filter active" data-source="all">ALL</button>
+        <button class="filter" data-source="CBN News">CBN</button>
+        <button class="filter" data-source="BBC News">BBC</button>
+        <button class="filter" data-source="Al Jazeera">AL JAZEERA</button>
+        <button class="filter" data-source="The Guardian">GUARDIAN</button>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Intelligence categories">
+        <button role="tab" data-tab="wire" aria-selected="true">NEWS</button>
+        <button role="tab" data-tab="quakes" aria-selected="false">QUAKES</button>
+        <button role="tab" data-tab="signals" aria-selected="false">SIGNALS</button>
+        <button role="tab" data-tab="history" aria-selected="false">HISTORY</button>
+      </div>
+      <div class="pane" id="pane-wire"><p class="muted">Loading headlines from news outlets…</p></div>
       <div class="pane" id="pane-quakes" hidden></div>
       <div class="pane" id="pane-signals" hidden></div>
       <div class="pane" id="pane-history" hidden></div>
-      <div class="pane" id="pane-brief" hidden>
-        <p class="muted">Summarises the current headlines and quakes with Claude. Needs the /api/brief function deployed with an ANTHROPIC_API_KEY.</p>
-        <button id="briefBtn" class="btn">Generate briefing</button>
-        <div id="briefOut" class="brief"></div>
-      </div>
+      <div class="panel-foot"><span>PUBLIC SOURCES · AUTOMATIC REFRESH</span><span id="lastUpdate">WAITING FOR DATA</span></div>
     </aside>
   </main>
 
-  <footer class="about">
-    <div>
-      <div class="eyebrow">THE CREATOR</div>
-      <h2>George Olutolase</h2>
-      <p>Creator of God's Eye. A Computer Science student at Bowen University and aspiring AI engineer interested in Python, machine learning, data analysis and building technology that makes complex information easier to understand.</p>
-    </div>
-    <div class="about-mark">G<span>E</span></div>
-  </footer>
-
+  <footer class="site-footer"><span>Created by George Tolase</span><span>GOD'S EYE <i>·</i> GLOBAL INTELLIGENCE</span></footer>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
