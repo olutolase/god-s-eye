@@ -1,14 +1,13 @@
-function extract(xml, tag) {
-  const m = xml.match(new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">", "i"));
-  return m ? m[1].replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1").replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').trim() : "";
-}
 async function readTrends(geo) {
   const response = await fetch("https://trends.google.com/trending/rss?geo=" + geo, { signal: AbortSignal.timeout(9000), headers: { "user-agent": "GodsEye/2.0" } });
   if (!response.ok) throw new Error("Trends feed unavailable");
   const xml = await response.text();
-  return [...xml.matchAll(/<item\\b[\\s\\S]*?<\\/item>/gi)].map(m => {
+  return [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)].map(m => {
     const block = m[0];
-    const get = (tag) => { const x = block.match(new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">", "i")); return x ? x[1].replace(/<[^>]*>/g," ").replace(/&amp;/g,"&").trim() : ""; };
+    const get = (tag) => {
+      const x = block.match(new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">", "i"));
+      return x ? x[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g,"$1").replace(/<[^>]*>/g," ").replace(/&amp;/g,"&").trim() : "";
+    };
     return { title: get("title"), traffic: get("ht:approx_traffic"), published: get("pubDate"), url: get("ht:news_item_url") };
   }).filter(x => x.title).slice(0, 12);
 }
