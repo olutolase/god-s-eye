@@ -13,7 +13,7 @@
 - NASA FIRMS active-fire detections when a FIRMS MAP_KEY is configured.
 - US National Weather Service active alerts where location geometry is supplied. This is not a global storm catalogue.
 - Travel Check: destination geocoding, current weather, recent GDELT security/conflict reporting, WHO Disease Outbreak News matches and optional Cloudflare Radar outage annotations.
-- Social Pulse: Google Trends RSS for Nigeria and global search trends, plus direct discovery links to X, Instagram and Facebook. These links are not represented as verified platform-wide trend rankings.
+- Social Pulse: Google Trends RSS for Nigeria and US search trends, plus direct discovery links to X, Instagram and Facebook. These links are not represented as verified platform-wide trend rankings.
 - Market ticker snapshots for SPY, QQQ, S&P 500, Nasdaq, gold and crude oil, via Yahoo Finance chart data.
 - Ask God's Eye: Gemini-powered Q&A grounded in current dashboard feeds and optional saved history.
 - USGS earthquake observations, seismic screening and optional Supabase event history.
