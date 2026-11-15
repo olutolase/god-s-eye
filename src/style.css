@@ -111,3 +111,31 @@ h2{font-size:16px;margin:4px 0 0;letter-spacing:-.03em}
 @media(max-width:800px){.brand strong{font-size:17px}.brand-mark{width:38px;height:38px}.ask-panel,.shipping-panel{margin:0 10px 10px}.chokepoints{grid-template-columns:1fr}.markets-ticker{align-items:flex-start;flex-direction:column;gap:7px}}
 
 .news-summary{font-size:11px;line-height:1.65;color:#b6c6d4;margin:9px 0 4px}
+
+
+/* Regional intelligence, social pulse and destination briefing */
+.trends-panel,.travel-panel{margin:0 16px 16px;border:1px solid #203445;border-radius:7px;background:#0a131c;overflow:hidden}
+.social-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:12px}
+.social-links a{border:1px solid #294052;border-radius:4px;padding:10px 5px;text-align:center;color:#a9c4d8;text-decoration:none;font:9px var(--mono);letter-spacing:.04em}
+.social-links a:hover{border-color:#52d6c7;color:#52d6c7}
+.trend-region{padding:10px 13px;border-top:1px solid var(--line)}
+.trend-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.trend-item{display:flex;justify-content:space-between;gap:8px;align-items:center;border:1px solid #1b2a39;border-radius:4px;padding:7px;color:#dce6ef;text-decoration:none;font-size:10px;line-height:1.4}
+.trend-item:hover{border-color:#52d6c7}
+.trend-item small{color:#8295a8;font:8px var(--mono);white-space:nowrap}
+.trend-note,.travel-intro{padding:0 13px 12px;margin:0}
+.travel-form{display:flex;gap:8px;padding:0 13px 12px}
+.travel-form input{min-width:0;flex:1;border:1px solid #294052;border-radius:5px;background:#101c28;color:var(--text);padding:11px;font:11px var(--sans)}
+.travel-form button{border:1px solid #28615b;border-radius:5px;background:#12312f;color:var(--teal);padding:0 13px;font:10px var(--mono);cursor:pointer}
+.travel-form button:disabled{opacity:.55;cursor:wait}
+.travel-results{padding:0 13px 13px}
+.travel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.travel-card{border:1px solid #203445;border-radius:5px;padding:10px;min-width:0}
+.travel-card h3{font:9px var(--mono);letter-spacing:.1em;color:var(--teal);margin:0 0 8px}
+.travel-card p,.travel-card li{font-size:10px;line-height:1.55;color:#c4d1dd;margin:5px 0}
+.travel-card ul{padding-left:15px;margin:0}
+.travel-status{font:8px var(--mono);color:#8295a8}
+.travel-meta{font:8px var(--mono);color:#8295a8;margin-top:8px}
+.travel-card a{color:#8fc6ff;text-decoration:none}
+.travel-disclaimer{font-size:9px;color:#8295a8;line-height:1.6;margin:10px 0 0}
+@media(max-width:800px){.trends-panel,.travel-panel{margin:0 10px 10px}.trend-list{grid-template-columns:1fr}.travel-grid{grid-template-columns:1fr}}
