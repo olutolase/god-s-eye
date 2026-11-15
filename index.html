@@ -54,6 +54,8 @@
         <button class="filter" data-source="The Guardian">GUARDIAN</button>
         <button class="filter" data-source="Reuters">REUTERS</button>
         <button class="filter" data-source="Associated Press">AP</button>
+        <button class="filter" data-source="Nigeria">NIGERIA</button>
+        <button class="filter" data-source="Africa">AFRICA</button>
       </div>
       <div class="tabs" role="tablist" aria-label="Intelligence categories">
         <button role="tab" data-tab="wire" aria-selected="true">NEWS</button>
@@ -67,7 +69,21 @@
       <div class="pane" id="pane-history" hidden></div>
       <div class="panel-foot"><span>PUBLIC SOURCES · AUTOMATIC REFRESH</span><span id="lastUpdate">WAITING FOR DATA</span></div>
     <section class="ask-panel"><div class="panel-head"><div><span class="eyebrow">LIVE DATA INTERROGATION</span><h2>Ask God’s Eye</h2></div></div><p class="muted ask-intro">Ask about current events using the live observations available on this globe.</p><form id="askForm"><input id="askInput" maxlength="800" placeholder="What’s happening near Japan today?" autocomplete="off" /><button type="submit" id="askButton">ASK ↗</button></form><div id="askAnswer" class="ask-answer" aria-live="polite">Claude will answer from the live feeds available to this session.</div></section>
-      <section class="shipping-panel"><div class="panel-head"><div><span class="eyebrow">MARITIME MONITOR</span><h2>Shipping chokepoints</h2></div></div><div class="chokepoints"><article><b>SUEZ CANAL</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF HORMUZ</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF MALACCA</b><span>AIS DATA NOT CONNECTED</span></article></div><p class="muted">Vessel counts and traffic-drop alerts require a licensed or provisioned AIS data feed. No vessel counts are fabricated.</p></section></aside>
+      <section class="shipping-panel"><div class="panel-head"><div><span class="eyebrow">MARITIME MONITOR</span><h2>Shipping chokepoints</h2></div></div><div class="chokepoints"><article><b>SUEZ CANAL</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF HORMUZ</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF MALACCA</b><span>AIS DATA NOT CONNECTED</span></article></div><p class="muted">Vessel counts and traffic-drop alerts require a licensed or provisioned AIS data feed. No vessel counts are fabricated.</p></section>
+      <section class="trends-panel">
+        <div class="panel-head"><div><span class="eyebrow">SOCIAL PULSE</span><h2>Trending now</h2></div><span class="feed-count">DISCOVERY</span></div>
+        <div class="social-links"><a href="https://x.com/explore" target="_blank" rel="noopener noreferrer">X / TWITTER ↗</a><a href="https://www.instagram.com/explore/" target="_blank" rel="noopener noreferrer">INSTAGRAM ↗</a><a href="https://www.facebook.com/watch/" target="_blank" rel="noopener noreferrer">FACEBOOK ↗</a></div>
+        <div class="trend-region"><span class="eyebrow">NIGERIA · GOOGLE TRENDS</span><div id="nigeriaTrends" class="trend-list"><p class="muted">Loading Nigerian searches…</p></div></div>
+        <div class="trend-region"><span class="eyebrow">GLOBAL · GOOGLE TRENDS</span><div id="globalTrends" class="trend-list"><p class="muted">Loading global searches…</p></div></div>
+        <p class="muted trend-note">Google Trends shows search interest, not social-platform rankings. X, Instagram and Facebook links open their own live discovery pages; platform-wide ranked feeds are not publicly available without approved data access.</p>
+      </section>
+      <section class="travel-panel">
+        <div class="panel-head"><div><span class="eyebrow">PRE-TRIP INTELLIGENCE</span><h2>Travel Check</h2></div><span class="feed-count">LIVE LOOKUP</span></div>
+        <p class="muted travel-intro">Check recent security reporting, WHO outbreak notices, internet disruptions and current weather before you travel.</p>
+        <form id="travelForm" class="travel-form"><input id="travelPlace" maxlength="100" placeholder="Enter a city or country — e.g. Lagos" autocomplete="off" required /><button id="travelButton" type="submit">CHECK ↗</button></form>
+        <div id="travelResults" class="travel-results" aria-live="polite"><p class="muted">Search a destination to build a one-screen brief. No result is not proof that a location is safe.</p></div>
+      </section>
+    </aside>
   </main>
 
   <footer class="site-footer"><span>Created by George Tolase</span><span>GOD'S EYE <i>·</i> GLOBAL INTELLIGENCE</span></footer>
