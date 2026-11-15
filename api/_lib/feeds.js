@@ -12,7 +12,18 @@ const RSS_FEEDS = [
   { source: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml" },
   { source: "The Guardian", url: "https://www.theguardian.com/world/rss" },
   { source: "Reuters", url: googleNews("site:reuters.com world news") },
-  { source: "Associated Press", url: googleNews("site:apnews.com world news") }
+  { source: "Associated Press", url: googleNews("site:apnews.com world news") },
+  { source: "Channels Television", url: googleNews("site:channelstv.com Nigeria") },
+  { source: "Premium Times", url: googleNews("site:premiumtimesng.com Nigeria") },
+  { source: "TheCable", url: googleNews("site:thecable.ng Nigeria") },
+  { source: "Punch Nigeria", url: googleNews("site:punchng.com Nigeria") },
+  { source: "Vanguard Nigeria", url: googleNews("site:vanguardngr.com Nigeria") },
+  { source: "BusinessDay Nigeria", url: googleNews("site:businessday.ng Nigeria") },
+  { source: "Daily Trust", url: googleNews("site:dailytrust.com Nigeria") },
+  { source: "Arise News", url: googleNews("site:arise.tv Nigeria") },
+  { source: "AllAfrica", url: "https://allafrica.com/tools/headlines/rdf/latest/headlines.rdf" },
+  { source: "Africa-wide", url: googleNews("Africa news -Nigeria") },
+  { source: "Nigeria-wide", url: googleNews("Nigeria news -sports") }
 ];
 
 function stripTags(value = "") {
