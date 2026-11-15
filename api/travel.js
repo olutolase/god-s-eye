@@ -1,9 +1,12 @@
 const timeout = (url, options = {}) => fetch(url, { ...options, signal: AbortSignal.timeout(10000) });
-const clean = (value, max = 180) => String(value || "").replace(/[<>\\u0000-\\u001f]/g, " ").slice(0, max).trim();
-const xmlText = (value = "") => String(value).replace(/<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>/g, "$1").replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/\\s+/g, " ").trim();
+const clean = (value, max = 180) => String(value || "").replace(/[<>\u0000-\u001f]/g, " ").slice(0, max).trim();
+const xmlText = (value = "") => String(value).replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/<[^>]*>/g, " ").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/\s+/g, " ").trim();
 function rssItems(xml) {
-  return [...xml.matchAll(/<item\\b[\\s\\S]*?<\\/item>/gi)].map((m) => {
-    const get = (tag) => xmlText((m[0].match(new RegExp("<" + tag + "(?:\\\\s[^>]*)?>([\\\\s\\S]*?)</" + tag + ">", "i")) || [])[1] || "");
+  return [...xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)].map((m) => {
+    const get = (tag) => {
+      const match = m[0].match(new RegExp("<" + tag + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + tag + ">", "i"));
+      return xmlText(match?.[1] || "");
+    };
     return { title: get("title"), description: get("description"), url: get("link"), published: get("pubDate") };
   }).filter(x => x.title);
 }
