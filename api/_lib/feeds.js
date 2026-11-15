@@ -1,8 +1,12 @@
 const USGS = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson";
 const ISS = "https://api.wheretheiss.at/v1/satellites/25544";
-const GDELT = "https://api.gdeltproject.org/api/v2/doc/doc?query=" +
-  encodeURIComponent("(conflict OR earthquake OR outbreak OR protest OR attack) sourcelang:english") +
-  "&mode=artlist&maxrecords=25&format=json&timespan=24h&sort=hybridrel";
+const gdeltUrl = (query, max = 35) => "https://api.gdeltproject.org/api/v2/doc/doc?query=" +
+  encodeURIComponent(query) + "&mode=artlist&maxrecords=" + max + "&format=json&timespan=24h&sort=hybridrel";
+const GDELT_FEEDS = [
+  gdeltUrl("(conflict OR earthquake OR outbreak OR protest OR attack) sourcelang:english", 35),
+  gdeltUrl("(Nigeria OR Lagos OR Abuja OR Kano OR Kaduna OR Borno) sourcelang:english", 40),
+  gdeltUrl("(Africa OR Ghana OR Kenya OR Sudan OR Ethiopia OR South Africa OR DR Congo) sourcelang:english", 40)
+];
 
 const googleNews = (query) => "https://news.google.com/rss/search?q=" +
   encodeURIComponent(query) + "&hl=en-US&gl=US&ceid=US:en";
@@ -68,9 +72,11 @@ function toIso(value) {
   return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
 }
 export async function collectFeeds() {
-  const [quakesResult, issResult, gdeltResult, ...rssResults] = await Promise.allSettled([
-    json(USGS), json(ISS), json(GDELT), ...RSS_FEEDS.map(rss)
+  const [quakesResult, issResult, ...remaining] = await Promise.allSettled([
+    json(USGS), json(ISS), ...GDELT_FEEDS.map(json), ...RSS_FEEDS.map(rss)
   ]);
+  const gdeltResults = remaining.slice(0, GDELT_FEEDS.length);
+  const rssResults = remaining.slice(GDELT_FEEDS.length);
   const quakes = quakesResult.status === "fulfilled"
     ? (quakesResult.value.features || []).map((f) => ({
         id: f.id, mag: f.properties.mag, place: f.properties.place || "Unknown",
@@ -81,12 +87,14 @@ export async function collectFeeds() {
   rssResults.forEach((result) => {
     if (result.status === "fulfilled") news.push(...result.value);
   });
-  if (gdeltResult.status === "fulfilled") {
-    news.push(...(gdeltResult.value.articles || []).map((a) => ({
-      title: a.title, url: a.url, source: a.domain || "GDELT", domain: a.domain,
-      published: toIso(a.seendate), summary: "", country: a.sourcecountry
-    })));
-  }
+  gdeltResults.forEach((result) => {
+    if (result.status === "fulfilled") {
+      news.push(...(result.value.articles || []).map((a) => ({
+        title: a.title, url: a.url, source: a.domain || "GDELT", domain: a.domain,
+        published: toIso(a.seendate), summary: "", country: a.sourcecountry
+      })));
+    }
+  });
   const unique = new Map();
   for (const item of news) {
     const key = item.url || item.title;
@@ -99,9 +107,10 @@ export async function collectFeeds() {
     quakes, news: headlines, iss, generatedAt: new Date().toISOString(),
     feedStatus: {
       earthquakes: quakesResult.status,
-      headlines: rssResults.some((r) => r.status === "fulfilled") || gdeltResult.status === "fulfilled" ? "fulfilled" : "rejected",
+      headlines: rssResults.some((r) => r.status === "fulfilled") || gdeltResults.some((r) => r.status === "fulfilled") ? "fulfilled" : "rejected",
       iss: issResult.status,
-      sources: RSS_FEEDS.map((feed, i) => ({ name: feed.source, status: rssResults[i].status }))
+      sources: RSS_FEEDS.map((feed, i) => ({ name: feed.source, status: rssResults[i].status })),
+      regionalSearches: GDELT_FEEDS.map((_, i) => ({ name: ["Global","Nigeria","Africa"][i], status: gdeltResults[i]?.status || "rejected" }))
     }
   };
 }
