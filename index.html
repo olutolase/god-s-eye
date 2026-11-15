@@ -45,7 +45,8 @@
     </section>
 
     <aside class="intel-panel">
-      <div class="panel-head"><div><span class="eyebrow">INTELLIGENCE FEED</span><h2>Latest headlines</h2></div><span class="feed-count" id="feedCount">0 ITEMS</span></div>
+      <div class="panel-head news-panel-head"><div><span class="eyebrow">INTELLIGENCE FEED</span><h2>Latest headlines</h2></div><div class="news-head-actions"><span class="feed-count" id="feedCount">0 ITEMS</span><button class="collapse-btn" id="toggleNews" type="button" aria-expanded="true" aria-controls="newsContent" title="Collapse news feed"><span id="newsToggleLabel">COLLAPSE</span><span class="chevron" aria-hidden="true">⌃</span></button></div></div>
+      <div id="newsContent" class="news-content">
       <div class="source-filters" id="sourceFilters">
         <button class="filter active" data-source="all">ALL</button>
         <button class="filter" data-source="CBN News">CBN</button>
@@ -68,6 +69,12 @@
       <div class="pane" id="pane-signals" hidden></div>
       <div class="pane" id="pane-history" hidden></div>
       <div class="panel-foot"><span>PUBLIC SOURCES · AUTOMATIC REFRESH</span><span id="lastUpdate">WAITING FOR DATA</span></div>
+      </div>
+    </aside>
+  </main>
+  <section class="tool-deck" aria-label="Additional intelligence tools">
+    <div class="tool-deck-heading"><div><span class="eyebrow">INTELLIGENCE MODULES</span><h2>More from God’s Eye</h2></div><span class="feed-count">4 MODULES</span></div>
+    <div class="tool-grid">
     <section class="ask-panel"><div class="panel-head"><div><span class="eyebrow">LIVE DATA INTERROGATION</span><h2>Ask God’s Eye</h2></div></div><p class="muted ask-intro">Ask about current events using the live observations available on this globe.</p><form id="askForm"><input id="askInput" maxlength="800" placeholder="What’s happening near Japan today?" autocomplete="off" /><button type="submit" id="askButton">ASK ↗</button></form><div id="askAnswer" class="ask-answer" aria-live="polite">Claude will answer from the live feeds available to this session.</div></section>
       <section class="shipping-panel"><div class="panel-head"><div><span class="eyebrow">MARITIME MONITOR</span><h2>Shipping chokepoints</h2></div></div><div class="chokepoints"><article><b>SUEZ CANAL</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF HORMUZ</b><span>AIS DATA NOT CONNECTED</span></article><article><b>STRAIT OF MALACCA</b><span>AIS DATA NOT CONNECTED</span></article></div><p class="muted">Vessel counts and traffic-drop alerts require a licensed or provisioned AIS data feed. No vessel counts are fabricated.</p></section>
       <section class="trends-panel">
@@ -83,8 +90,8 @@
         <form id="travelForm" class="travel-form"><input id="travelPlace" maxlength="100" placeholder="Enter a city or country — e.g. Lagos" autocomplete="off" required /><button id="travelButton" type="submit">CHECK ↗</button></form>
         <div id="travelResults" class="travel-results" aria-live="polite"><p class="muted">Search a destination to build a one-screen brief. No result is not proof that a location is safe.</p></div>
       </section>
-    </aside>
-  </main>
+    </div>
+  </section>
 
   <footer class="site-footer"><span>Created by George Tolase</span><span>GOD'S EYE <i>·</i> GLOBAL INTELLIGENCE</span></footer>
   <script type="module" src="/src/main.js"></script>
