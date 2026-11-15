@@ -144,10 +144,17 @@ function stat(value, label) {
   d.append(node("strong", "", String(value)), node("span", "", label));
   return d;
 }
+function isNigeriaItem(n) {
+  const sources = ["Channels Television","Premium Times","TheCable","Punch Nigeria","Vanguard Nigeria","BusinessDay Nigeria","Daily Trust","Arise News","Nigeria-wide"];
+  return sources.includes(n.source) || ["Nigeria","NG","NGA","Lagos","Abuja","Kano","Kaduna","Port Harcourt","Maiduguri"].includes(n.location?.name) || ["Nigeria","NG","NGA"].includes(n.country);
+}
+function isAfricaItem(n) {
+  return isNigeriaItem(n) || ["AllAfrica","Africa-wide"].includes(n.source) || Boolean(n.location && ["Ghana","Kenya","South Africa","Sudan","Ethiopia","Somalia","Uganda","Rwanda","Cameroon","Senegal","Mali","Niger","Chad","Mozambique","Zimbabwe","Zambia","Angola","Morocco","Egypt","Algeria","Tunisia","Libya","Congo","DRC","Democratic Republic of the Congo"].includes(n.location.name));
+}
 function renderWire() {
   const pane = $("pane-wire");
   pane.replaceChildren();
-  const news = state.news.filter((n) => state.selectedSource === "all" || n.source === state.selectedSource);
+  const news = state.news.filter((n) => state.selectedSource === "all" || (state.selectedSource === "Nigeria" ? isNigeriaItem(n) : state.selectedSource === "Africa" ? isAfricaItem(n) : n.source === state.selectedSource));
   $("feedCount").textContent = news.length + " ITEMS";
   if (!news.length) pane.append(node("p", "muted", "No headlines are available from the selected sources right now."));
   for (const n of news) {
@@ -219,6 +226,9 @@ function showTab(tab) {
 }
 function bindControls() {
   const askForm=$("askForm"); if(askForm) askForm.addEventListener("submit", async (event)=>{event.preventDefault(); const question=$("askInput").value.trim(); if(!question)return; const button=$("askButton"), answer=$("askAnswer"); button.disabled=true; button.textContent="THINKING…"; answer.textContent="Checking the live observations…"; try { const history=await fetch("/api/history").then(r=>r.ok?r.json():{}).catch(()=>({})); const response=await fetch("/api/ask-gemini",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({question,context:{news:state.news,quakes:state.quakes,planes:state.planes,storms:state.storms,fires:state.fires,markets:state.markets,history:history.events||[]}})}); const data=await response.json(); if(!response.ok)throw new Error(data.error||"Request failed"); answer.textContent=data.answer; } catch(error){answer.textContent=error.message;} finally{button.disabled=false;button.textContent="ASK ↗";} });
+  const travelForm = $("travelForm");
+  if (travelForm) travelForm.addEventListener("submit", runTravelCheck);
+  loadTrends();
   document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
   document.querySelectorAll(".filter").forEach((b) => b.addEventListener("click", () => {
     document.querySelectorAll(".filter").forEach((x) => x.classList.toggle("active", x === b));
@@ -232,8 +242,12 @@ async function refresh() {
     if (!response.ok) throw new Error("Feed request failed: " + response.status);
     const d = await response.json();
     state.quakes = (d.quakes || []).sort((a,b) => b.time-a.time);
-    state.news = (d.news || []).map((n) => ({ ...n, location: locateHeadline(n.title + " " + (n.summary || "")) }))
-      .sort((a,b) => new Date(b.published || 0) - new Date(a.published || 0));
+    state.news = (d.news || []).map((n) => {
+      let location = locateHeadline(n.title + " " + (n.summary || "") + " " + (n.country || ""));
+      if (!location && (["Nigeria","NG","NGA"].includes(n.country) || ["Channels Television","Premium Times","TheCable","Punch Nigeria","Vanguard Nigeria","BusinessDay Nigeria","Daily Trust","Arise News","Nigeria-wide"].includes(n.source))) location = { name: "Nigeria", lat: 9.08, lng: 8.67 };
+      if (!location && n.source === "Africa-wide") location = { name: "Africa", lat: 2.0, lng: 20.0 };
+      return { ...n, location };
+    }).sort((a,b) => new Date(b.published || 0) - new Date(a.published || 0));
     state.iss = d.iss || null;
     state.flagged = d.flagged || [];
     const extra = await fetch("/api/intel", {cache:"no-store"}).then(r => r.ok ? r.json() : {}).catch(() => ({}));
@@ -253,6 +267,84 @@ async function refresh() {
   }
 }
 function renderMarkets() { const el=$("marketsTicker"); if(!el)return; el.replaceChildren(); for(const m of state.markets){const item=node("span","market-item",`${m.symbol} ${m.price} ${m.change || ""}`); el.append(item);} if(!state.markets.length) el.textContent="MARKET DATA TEMPORARILY UNAVAILABLE"; }
+function appendTrendList(targetId, items, fallback) {
+  const target = $(targetId);
+  if (!target) return;
+  target.replaceChildren();
+  if (!items?.length) { target.append(node("p","muted",fallback)); return; }
+  for (const item of items.slice(0,10)) {
+    const link = safeLink(item.url || "https://trends.google.com/trending?geo=NG", item.title);
+    link.className = "trend-item";
+    link.rel = "noopener noreferrer";
+    const traffic = node("small","",item.traffic || "");
+    link.append(traffic);
+    target.append(link);
+  }
+}
+async function loadTrends() {
+  try {
+    const response = await fetch("/api/trends",{cache:"no-store"});
+    if (!response.ok) throw new Error("Trends unavailable");
+    const data = await response.json();
+    appendTrendList("nigeriaTrends",data.nigeria,"No Nigerian search trends were returned right now.");
+    appendTrendList("globalTrends",data.global,"Global search trends are temporarily unavailable.");
+  } catch {
+    appendTrendList("nigeriaTrends",[],"Nigerian search trends are temporarily unavailable.");
+    appendTrendList("globalTrends",[],"Global search trends are temporarily unavailable.");
+  }
+}
+function travelCard(title, status, content) {
+  const card = node("section","travel-card");
+  card.append(node("h3","",title),node("div","travel-status",status),content);
+  return card;
+}
+function reportList(items, emptyText) {
+  const wrap = node("div","");
+  if (!items?.length) { wrap.append(node("p","muted",emptyText)); return wrap; }
+  const list = node("ul","");
+  for (const item of items) {
+    const li = node("li","");
+    li.append(node("span","",item.title || item.description || "Report"));
+    if (item.source) li.append(node("span","travel-meta"," · "+item.source));
+    if (item.url) { li.append(document.createTextNode(" ")); const a=safeLink(item.url,"SOURCE ↗"); a.className=""; li.append(a); }
+    list.append(li);
+  }
+  wrap.append(list);
+  return wrap;
+}
+async function runTravelCheck(event) {
+  event.preventDefault();
+  const place = $("travelPlace").value.trim();
+  if (!place) return;
+  const button = $("travelButton"), results = $("travelResults");
+  button.disabled = true; button.textContent = "CHECKING…";
+  results.replaceChildren(node("p","muted","Gathering destination signals…"));
+  try {
+    const response = await fetch("/api/travel?place="+encodeURIComponent(place),{cache:"no-store"});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Travel Check failed");
+    results.replaceChildren();
+    const heading=node("div","travel-meta","DESTINATION · "+data.place.toUpperCase()+" · UPDATED "+new Date(data.generatedAt).toLocaleTimeString());
+    results.append(heading);
+    const weather=node("div","");
+    if (data.weather.current) {
+      const w=data.weather.current;
+      weather.append(node("p","",w.temperature+"°C · feels like "+w.feelsLike+"°C · wind "+w.wind+" km/h"),node("p","", "Humidity "+w.humidity+"% · rain chance "+(w.rainChance ?? "—")+"% · high/low "+w.high+"° / "+w.low+"°"),node("p","travel-meta","Observation "+w.time+" ("+w.timezone+")"));
+    } else weather.append(node("p","muted","Weather data is temporarily unavailable."));
+    const security=reportList(data.security.reports,"No matching security reports were returned in the last 7 days. This is not a safety clearance.");
+    const outbreaks=reportList(data.outbreaks.reports,"No matching WHO Disease Outbreak News item was found. WHO notices are not a complete local outbreak register.");
+    const internet=reportList(data.internet.reports,"No outage feed is configured or no matching annotation was returned. This is not proof that internet service is normal.");
+    results.append(node("div","travel-grid",""));
+    const grid=results.lastChild;
+    grid.append(travelCard("WEATHER",data.weather.status.toUpperCase()+" · OPEN-METEO",weather));
+    grid.append(travelCard("SECURITY / CONFLICT",data.security.status.toUpperCase()+" · GDELT 7D",security));
+    grid.append(travelCard("HEALTH / OUTBREAKS",data.outbreaks.status.toUpperCase()+" · WHO",outbreaks));
+    grid.append(travelCard("INTERNET DISRUPTIONS",data.internet.status.toUpperCase()+" · CLOUDFLARE RADAR",internet));
+    results.append(node("p","travel-disclaimer","Situational-awareness snapshot, not travel clearance or medical advice. Sources can lag or omit local incidents. Check official government travel advisories, local authorities and airlines before making decisions."));
+  } catch(error) {
+    results.replaceChildren(node("p","muted",error.message));
+  } finally { button.disabled=false; button.textContent="CHECK ↗"; }
+}
 function updateClock() {
   $("clock").textContent = new Date().toISOString().slice(11,19) + " UTC";
 }
