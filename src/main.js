@@ -224,7 +224,23 @@ function showTab(tab) {
   document.querySelectorAll(".pane").forEach((p) => { p.hidden = p.id !== "pane-" + tab; });
   if (tab === "history") renderHistory();
 }
+function setNewsCollapsed(collapsed) {
+  const panel = document.querySelector(".intel-panel");
+  const button = $("toggleNews");
+  if (!panel || !button) return;
+  panel.classList.toggle("is-collapsed", collapsed);
+  button.setAttribute("aria-expanded", String(!collapsed));
+  button.title = collapsed ? "Expand news feed" : "Collapse news feed";
+  $("newsToggleLabel").textContent = collapsed ? "EXPAND" : "COLLAPSE";
+}
 function bindControls() {
+  const newsToggle = $("toggleNews");
+  if (newsToggle) newsToggle.addEventListener("click", () => {
+    const collapsed = !document.querySelector(".intel-panel").classList.contains("is-collapsed");
+    setNewsCollapsed(collapsed);
+    try { sessionStorage.setItem("gods-eye-news-collapsed", String(collapsed)); } catch {}
+  });
+  try { setNewsCollapsed(sessionStorage.getItem("gods-eye-news-collapsed") === "true"); } catch { setNewsCollapsed(false); }
   const askForm=$("askForm"); if(askForm) askForm.addEventListener("submit", async (event)=>{event.preventDefault(); const question=$("askInput").value.trim(); if(!question)return; const button=$("askButton"), answer=$("askAnswer"); button.disabled=true; button.textContent="THINKING…"; answer.textContent="Checking the live observations…"; try { const history=await fetch("/api/history").then(r=>r.ok?r.json():{}).catch(()=>({})); const response=await fetch("/api/ask-gemini",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({question,context:{news:state.news,quakes:state.quakes,planes:state.planes,storms:state.storms,fires:state.fires,markets:state.markets,history:history.events||[]}})}); const data=await response.json(); if(!response.ok)throw new Error(data.error||"Request failed"); answer.textContent=data.answer; } catch(error){answer.textContent=error.message;} finally{button.disabled=false;button.textContent="ASK ↗";} });
   const travelForm = $("travelForm");
   if (travelForm) travelForm.addEventListener("submit", runTravelCheck);
