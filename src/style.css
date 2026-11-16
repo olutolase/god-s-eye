@@ -218,3 +218,47 @@ h2{font-size:16px;margin:4px 0 0;letter-spacing:-.03em}
     font-size: 7px;
   }
 }
+
+
+/* Desktop workspace: place the intelligence modules in the open column beneath the globe */
+@media (min-width: 801px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1.55fr) minmax(350px, .85fr);
+    grid-template-rows: auto 1fr;
+    align-items: start;
+  }
+  .globe-card { grid-column: 1; grid-row: 1; }
+  .workspace > .tool-deck {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .workspace > .tool-deck .tool-deck-heading { padding-top: 2px; }
+  .workspace > .tool-deck .tool-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .workspace > .tool-deck .tool-grid > .travel-panel { grid-column: span 2; }
+  .workspace > .intel-panel {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+  }
+  .workspace:has(.intel-panel.is-collapsed) {
+    grid-template-columns: minmax(0, 1fr) 76px;
+  }
+  .workspace:has(.intel-panel.is-collapsed) > .tool-deck {
+    grid-column: 1;
+  }
+}
+@media (max-width: 800px) {
+  .workspace > .tool-deck {
+    order: 3;
+    padding: 0;
+  }
+  .workspace > .intel-panel { order: 2; }
+  .workspace > .globe-card { order: 1; }
+}
